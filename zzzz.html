@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PeerMatch | AI-Powered CV Matching</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a0ca3;
+            --primary-light: #4895ef;
+            --secondary: #f72585;
+            --accent: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --success: #4bb543;
+            --warning: #ffcc00;
+            --danger: #dc3545;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--glass-border);
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .header-scrolled {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .logo-icon {
+            color: var(--secondary);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav ul li a {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        nav ul li a:hover {
+            color: var(--primary);
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: var(--transition);
+        }
+
+        nav ul li a:hover::after {
+            width: 100%;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 10rem 0 5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" opacity="0.1"><polygon fill="white" points="0,1000 1000,0 1000,1000"/></svg>');
+            background-size: cover;
+        }
+
+        .hero-content {
+            max-width: 700px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Section Styles */
+        .section {
+            padding: 5rem 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+        }
+
+        .section-title p {
+            color: var(--gray);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Upload Section */
+        .upload-section {
+            background: white;
+        }
+
+        .upload-container {
+            display: flex;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .upload-info {
+            flex: 1;
+        }
+
+        .upload-info h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-dark);
+        }
+
+        .upload-info ul {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .upload-info ul li {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upload-info ul li i {
+            color: var(--success);
+        }
+
+        .upload-area {
+            flex: 1;
+            background: var(--light);
+            border: 2px dashed #ccc;
+            border-radius: 15px;
+            padding: 3rem;
+            text-align: center;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .upload-area.active {
+            border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: #ccc;
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .upload-area.active .upload-icon {
+            color: var(--primary);
+        }
+
+        .upload-text {
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-info {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        /* Search Section */
+        .search-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .search-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .search-box {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .keywords-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .keyword {
+            background: var(--light);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .keyword:hover {
+            background: var(--primary-light);
+            color: white;
+        }
+
+        .keyword i {
+            cursor: pointer;
+        }
+
+        .results-section {
+            display: none;
+        }
+
+        /* Match Cards */
+        .match-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s forwards;
+        }
+
+        .match-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .match-info h3 {
+            margin-bottom: 0.5rem;
+            color: var(--primary-dark);
+        }
+
+        .match-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .match-tag {
+            background: var(--light);
+            padding: 0.3rem 0.7rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .match-percentage {
+            text-align: center;
+        }
+
+        .percentage-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .percentage-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+
+        /* How It Works */
+        .steps-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .step {
+            flex: 1;
+            min-width: 250px;
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .step:hover {
+            transform: translateY(-10px);
+        }
+
+        .step-number {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .step-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .step h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-dark);
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--primary);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+        }
+
+        .btn-secondary:hover {
+            background-color: #e11574;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 4rem 0 2rem;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: #adb5bd;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            transition: var(--transition);
+        }
+
+        .social-links a:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #adb5bd;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .upload-container {
+                flex-direction: column;
+            }
+            
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            nav ul {
+                gap: 1rem;
+            }
+            
+            .auth-buttons {
+                margin-top: 1rem;
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .search-form {
+                flex-direction: column;
+            }
+            
+            .match-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .match-percentage {
+                align-self: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header id="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-people-arrows logo-icon"></i>
+                    <span>PeerMatch</span>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#upload">Upload CV</a></li>
+                        <li><a href="#search">Find Matches</a></li>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                    </ul>
+                </nav>
+                <div class="auth-buttons">
+                    <a href="#" class="btn btn-outline">Log In</a>
+                    <a href="#" class="btn">Sign Up</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Find Your Perfect Professional Match</h1>
+                <p>Upload your CV and discover professionals with similar skills, experiences, and interests. Our AI-powered matching system connects you with the right peers.</p>
+                <div class="hero-buttons">
+                    <a href="#upload" class="btn"><i class="fas fa-cloud-upload-alt"></i> Upload Your CV</a>
+                    <a href="#search" class="btn btn-outline"><i class="fas fa-search"></i> Find Matches</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-value">10K+</span>
+                        <span class="stat-label">CVs Analyzed</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">95%</span>
+                        <span class="stat-label">Match Accuracy</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">2.5K+</span>
+                        <span class="stat-label">Successful Matches</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Upload Section -->
+    <section id="upload" class="section upload-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Upload Your CV</h2>
+                <p>Get started by uploading your CV. Our system will extract and analyze your skills, experience, and qualifications.</p>
+            </div>
+            <div class="upload-container">
+                <div class="upload-info">
+                    <h3>Why Upload Your CV?</h3>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Get matched with professionals sharing similar skills</li>
+                        <li><i class="fas fa-check-circle"></i> Discover career opportunities you might have missed</li>
+                        <li><i class="fas fa-check-circle"></i> Receive personalized recommendations</li>
+                        <li><i class="fas fa-check-circle"></i> Expand your professional network</li>
+                    </ul>
+                    <p>Your data is secure and will only be used for matching purposes. We respect your privacy.</p>
+                </div>
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <p class="upload-text">Drag & drop your CV here or click to browse</p>
+                    <p class="file-info">Supported formats: PDF, DOC, DOCX (Max 5MB)</p>
+                    <input type="file" id="cvUpload" class="file-input" accept=".pdf,.doc,.docx">
+                    <button class="btn" id="uploadBtn"><i class="fas fa-file-upload"></i> Select File</button>
+                </div>
+            </div>
+            <div id="uploadStatus"></div>
+        </div>
+    </section>
+
+    <!-- Search Section -->
+    <section id="search" class="section search-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Find Your Matches</h2>
+                <p>Enter keywords related to skills, experiences, or interests to find matching CVs in our database.</p>
+            </div>
+            <div class="search-container">
+                <div class="search-box">
+                    <div class="search-form">
+                        <input type="text" id="keywordInput" class="search-input" placeholder="e.g., JavaScript, Project Management, Data Analysis">
+                        <button class="btn" id="searchBtn"><i class="fas fa-search"></i> Find Matches</button>
+                    </div>
+                    <div class="keywords-container" id="keywordsContainer">
+                        <!-- Keywords will be added here dynamically -->
+                    </div>
+                    <p>Popular keywords: <span class="popular-keywords">Web Development, Data Science, UX Design, Marketing, Finance</span></p>
+                </div>
+                <div class="loading" id="loadingIndicator">
+                    <div class="spinner"></div>
+                    <p>Analyzing CVs and finding matches...</p>
+                </div>
+                <div class="results-section" id="resultsSection">
+                    <h3>Matching Results</h3>
+                    <div id="matchesContainer"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>How It Works</h2>
+                <p>Our intelligent matching process in three simple steps</p>
+            </div>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-icon">
+                        <i class="fas fa-file-upload"></i>
+                    </div>
+                    <h3>Upload Your CV</h3>
+                    <p>Upload your CV in any popular format. Our system will extract key information automatically.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3>AI Processing</h3>
+                    <p>Our advanced AI analyzes your skills, experience, and qualifications to create your professional profile.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h3>Get Matches</h3>
+                    <p>Find professionals with similar profiles or search for specific skills and experiences.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>PeerMatch</h3>
+                    <p>Connecting professionals through intelligent CV analysis and matching.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#upload">Upload CV</a></li>
+                        <li><a href="#search">Find Matches</a></li>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-envelope"></i> info@peermatch.com</li>
+                        <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Tech Street, San Francisco, CA</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 PeerMatch. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const header = document.getElementById('header');
+        const uploadArea = document.getElementById('uploadArea');
+        const cvUpload = document.getElementById('cvUpload');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const uploadStatus = document.getElementById('uploadStatus');
+        const keywordInput = document.getElementById('keywordInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const keywordsContainer = document.getElementById('keywordsContainer');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const resultsSection = document.getElementById('resultsSection');
+        const matchesContainer = document.getElementById('matchesContainer');
+
+        // Popular keywords for suggestions
+        const popularKeywords = [
+            'JavaScript', 'Python', 'React', 'Data Analysis', 'Project Management',
+            'UI/UX Design', 'Marketing', 'Sales', 'Finance', 'Machine Learning'
+        ];
+
+        // Mock database of CVs (in real implementation, this would be in your actual database)
+        const cvDatabase = [
+            {
+                id: 1,
+                name: "Senior Software Engineer",
+                skills: ["JavaScript", "React", "Node.js", "AWS", "TypeScript", "MongoDB"],
+                experience: "5+ years",
+                education: "Computer Science",
+                industry: "Technology",
+                tags: ["Full Stack", "Cloud", "Agile"]
+            },
+            {
+                id: 2,
+                name: "Data Analyst",
+                skills: ["Python", "SQL", "Tableau", "Statistics", "Excel", "R"],
+                experience: "3+ years",
+                education: "Statistics",
+                industry: "Finance",
+                tags: ["Data Visualization", "Business Intelligence", "Analytics"]
+            },
+            {
+                id: 3,
+                name: "Product Manager",
+                skills: ["Agile", "Scrum", "Product Strategy", "UX", "Market Research", "JIRA"],
+                experience: "4+ years",
+                education: "Business Administration",
+                industry: "Technology",
+                tags: ["Product Development", "User Research", "Roadmapping"]
+            },
+            {
+                id: 4,
+                name: "UX Designer",
+                skills: ["Figma", "User Research", "Prototyping", "UI Design", "Wireframing", "Adobe Creative Suite"],
+                experience: "3+ years",
+                education: "Design",
+                industry: "Technology",
+                tags: ["User Experience", "Interface Design", "Research"]
+            },
+            {
+                id: 5,
+                name: "Digital Marketing Specialist",
+                skills: ["SEO", "Content Marketing", "Social Media", "Analytics", "Google Ads", "Email Marketing"],
+                experience: "2+ years",
+                education: "Marketing",
+                industry: "E-commerce",
+                tags: ["Digital Strategy", "Content Creation", "Campaign Management"]
+            }
+        ];
+
+        // Current user's CV data (extracted after upload)
+        let userCVData = null;
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', initApp);
+        window.addEventListener('scroll', handleScroll);
+        uploadBtn.addEventListener('click', () => cvUpload.click());
+        cvUpload.addEventListener('change', handleFileUpload);
+        searchBtn.addEventListener('click', performSearch);
+        keywordInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') performSearch();
+        });
+
+        // Initialize the application
+        function initApp() {
+            // Add drag and drop functionality
+            setupDragAndDrop();
+            
+            // Add popular keywords to the container
+            displayPopularKeywords();
+            
+            // Add animation to elements when they come into view
+            setupScrollAnimations();
+        }
+
+        // Handle scroll for header effect
+        function handleScroll() {
+            if (window.scrollY > 50) {
+                header.classList.add('header-scrolled');
+            } else {
+                header.classList.remove('header-scrolled');
+            }
+        }
+
+        // Setup drag and drop for upload area
+        function setupDragAndDrop() {
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('active');
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('active');
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('active');
+                
+                if (e.dataTransfer.files.length) {
+                    cvUpload.files = e.dataTransfer.files;
+                    handleFileUpload();
+                }
+            });
+        }
+
+        // Display popular keywords
+        function displayPopularKeywords() {
+            popularKeywords.forEach(keyword => {
+                const keywordElement = document.createElement('div');
+                keywordElement.className = 'keyword';
+                keywordElement.innerHTML = `
+                    ${keyword}
+                    <i class="fas fa-plus" data-keyword="${keyword}"></i>
+                `;
+                keywordsContainer.appendChild(keywordElement);
+            });
+            
+            // Add event listeners to keyword plus icons
+            document.querySelectorAll('.keyword i').forEach(icon => {
+                icon.addEventListener('click', (e) => {
+                    const keyword = e.target.getAttribute('data-keyword');
+                    addKeywordToSearch(keyword);
+                });
+            });
+        }
+
+        // Add keyword to search input
+        function addKeywordToSearch(keyword) {
+            const currentValue = keywordInput.value.trim();
+            if (currentValue === '') {
+                keywordInput.value = keyword;
+            } else {
+                // Check if keyword already exists
+                const keywords = currentValue.split(',').map(k => k.trim());
+                if (!keywords.includes(keyword)) {
+                    keywordInput.value = `${currentValue}, ${keyword}`;
+                }
+            }
+        }
+
+        // Handle file upload
+        function handleFileUpload() {
+            if (cvUpload.files.length === 0) return;
+            
+            const file = cvUpload.files[0];
+            const fileSize = file.size / 1024 / 1024; // in MB
+            const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+            
+            // Validate file type
+            if (!allowedTypes.includes(file.type)) {
+                showUploadStatus('Please upload a PDF, DOC, or DOCX file.', 'error');
+                return;
+            }
+            
+            // Validate file size
+            if (fileSize > 5) {
+                showUploadStatus('File size exceeds 5MB limit.', 'error');
+                return;
+            }
+            
+            // Show success message
+            showUploadStatus(`File "${file.name}" uploaded successfully! Processing with n8n...`, 'success');
+            
+            // Simulate n8n processing
+            simulateN8nProcessing(file);
+        }
+        
+        function showUploadStatus(message, type) {
+            const statusClass = type === 'error' ? 'danger' : 'success';
+            uploadStatus.innerHTML = `
+                <div class="alert alert-${statusClass}" style="padding: 1rem; border-radius: 10px; background: ${type === 'error' ? '#ffe6e6' : '#e6ffe6'}; color: ${type === 'error' ? '#d63031' : '#00b894'}; margin-top: 1rem;">
+                    <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'check-circle'}"></i> ${message}
+                </div>
+            `;
+        }
+        
+        // Simulate n8n processing workflow
+        function simulateN8nProcessing(file) {
+            // Step 1: Upload file to n8n
+            console.log(`[n8n] Uploading file "${file.name}" to n8n workflow...`);
+            
+            // Step 2: Extract text from CV
+            setTimeout(() => {
+                console.log('[n8n] Extracting text from CV...');
+                
+                // Step 3: Parse CV data (skills, experience, education, etc.)
+                setTimeout(() => {
+                    console.log('[n8n] Parsing CV data...');
+                    
+                    // Step 4: Store in database
+                    setTimeout(() => {
+                        console.log('[n8n] Storing CV data in database...');
+                        
+                        // Simulate extracted CV data
+                        userCVData = {
+                            id: Date.now(),
+                            name: "Your CV",
+                            skills: extractSkillsFromFileName(file.name),
+                            experience: "Extracted from your CV",
+                            education: "Extracted from your CV",
+                            industry: "Technology",
+                            tags: ["Uploaded CV"]
+                        };
+                        
+                        console.log('[n8n] CV processing complete! Data stored in database.');
+                        showUploadStatus('CV successfully processed by n8n! You can now search for matches.', 'success');
+                        
+                        // Show extracted skills
+                        showExtractedSkills(userCVData.skills);
+                        
+                    }, 1000);
+                }, 1000);
+            }, 1000);
+        }
+        
+        // Extract skills based on filename (simulation)
+        function extractSkillsFromFileName(fileName) {
+            // In a real implementation, this would use n8n with AI/ML to extract skills
+            const skillKeywords = [
+                'javascript', 'python', 'react', 'node', 'java', 'sql', 
+                'html', 'css', 'aws', 'azure', 'docker', 'kubernetes',
+                'management', 'analysis', 'design', 'development', 'marketing'
+            ];
+            
+            const extractedSkills = [];
+            const fileNameLower = fileName.toLowerCase();
+            
+            skillKeywords.forEach(skill => {
+                if (fileNameLower.includes(skill)) {
+                    extractedSkills.push(skill.charAt(0).toUpperCase() + skill.slice(1));
+                }
+            });
+            
+            // Add some default skills if none detected
+            if (extractedSkills.length === 0) {
+                extractedSkills.push('Communication', 'Problem Solving', 'Teamwork');
+            }
+            
+            return extractedSkills;
+        }
+        
+        // Show extracted skills to user
+        function showExtractedSkills(skills) {
+            const skillsHtml = skills.map(skill => 
+                `<span class="keyword" style="background: var(--primary-light); color: white;">${skill}</span>`
+            ).join('');
+            
+            uploadStatus.innerHTML += `
+                <div style="margin-top: 1rem; padding: 1rem; background: white; border-radius: 10px; box-shadow: var(--shadow);">
+                    <h4>Skills extracted from your CV:</h4>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem;">
+                        ${skillsHtml}
+                    </div>
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--gray);">
+                        These skills will be used for matching with other CVs in our database.
+                    </p>
+                </div>
+            `;
+        }
+        
+        // Perform search and matching
+        function performSearch() {
+            const keywords = keywordInput.value.trim();
+            
+            if (!keywords) {
+                showNotification('Please enter some keywords to search for.', 'warning');
+                return;
+            }
+            
+            if (!userCVData) {
+                showNotification('Please upload your CV first to find matches.', 'warning');
+                return;
+            }
+            
+            // Show loading indicator
+            loadingIndicator.style.display = 'block';
+            resultsSection.style.display = 'none';
+            
+            // Simulate API call to n8n for matching
+            setTimeout(() => {
+                // Hide loading indicator
+                loadingIndicator.style.display = 'none';
+                
+                // Show results
+                resultsSection.style.display = 'block';
+                
+                // Perform matching algorithm
+                const matches = performMatching(keywords);
+                displayMatches(matches);
+            }, 2000);
+        }
+        
+        // Matching algorithm (simulates n8n matching logic)
+        function performMatching(keywords) {
+            const searchTerms = keywords.split(',').map(term => term.trim().toLowerCase());
+            
+            // Calculate match scores for each CV in database
+            const matches = cvDatabase.map(cv => {
+                let score = 0;
+                let matchedSkills = [];
+                
+                // Skill matching
+                searchTerms.forEach(term => {
+                    cv.skills.forEach(skill => {
+                        if (skill.toLowerCase().includes(term)) {
+                            score += 20;
+                            if (!matchedSkills.includes(skill)) {
+                                matchedSkills.push(skill);
+                            }
+                        }
+                    });
+                    
+                    // Tag matching
+                    cv.tags.forEach(tag => {
+                        if (tag.toLowerCase().includes(term)) {
+                            score += 10;
+                        }
+                    });
+                    
+                    // Industry/experience matching
+                    if (cv.industry.toLowerCase().includes(term) || 
+                        cv.experience.toLowerCase().includes(term) ||
+                        cv.education.toLowerCase().includes(term)) {
+                        score += 15;
+                    }
+                });
+                
+                // Cap score at 100%
+                score = Math.min(score, 100);
+                
+                return {
+                    name: cv.name,
+                    match: score,
+                    tags: matchedSkills.length > 0 ? matchedSkills : cv.tags.slice(0, 3)
+                };
+            });
+            
+            // Sort by match score (descending) and filter out low matches
+            return matches
+                .filter(match => match.match > 10)
+                .sort((a, b) => b.match - a.match);
+        }
+        
+        function displayMatches(matches) {
+            matchesContainer.innerHTML = '';
+            
+            if (matches.length === 0) {
+                matchesContainer.innerHTML = '<p style="text-align: center; padding: 2rem;">No matches found. Try different keywords.</p>';
+                return;
+            }
+            
+            // Add delay for staggered animation
+            matches.forEach((match, index) => {
+                setTimeout(() => {
+                    const matchCard = document.createElement('div');
+                    matchCard.className = 'match-card';
+                    matchCard.style.animationDelay = `${index * 0.1}s`;
+                    
+                    matchCard.innerHTML = `
+                        <div class="match-info">
+                            <h3>${match.name}</h3>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: ${match.match}%"></div>
+                            </div>
+                            <div class="match-tags">
+                                ${match.tags.map(tag => `<span class="match-tag">${tag}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div class="match-percentage">
+                            <div class="percentage-value">${match.match}%</div>
+                            <div class="percentage-label">Match</div>
+                        </div>
+                    `;
+                    
+                    matchesContainer.appendChild(matchCard);
+                }, index * 100);
+            });
+        }
+        
+        function showNotification(message, type) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            // Style the notification
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                background: ${type === 'warning' ? '#fff3cd' : '#d1ecf1'};
+                color: ${type === 'warning' ? '#856404' : '#0c5460'};
+                padding: 1rem 1.5rem;
+                border-radius: 10px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                z-index: 10000;
+                max-width: 400px;
+                animation: slideInRight 0.3s ease;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove notification after 5 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 5000);
+        }
+        
+        function setupScrollAnimations() {
+            // Simple scroll animation for elements
+            const animateOnScroll = () => {
+                const elements = document.querySelectorAll('.step, .section-title');
+                
+                elements.forEach(element => {
+                    const elementTop = element.getBoundingClientRect().top;
+                    const elementVisible = 150;
+                    
+                    if (elementTop < window.innerHeight - elementVisible) {
+                        element.style.opacity = '1';
+                        element.style.transform = 'translateY(0)';
+                    }
+                });
+            };
+            
+            // Set initial state for animated elements
+            document.querySelectorAll('.step, .section-title').forEach(element => {
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(20px)';
+                element.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            });
+            
+            // Listen for scroll events
+            window.addEventListener('scroll', animateOnScroll);
+            // Initial check
+            animateOnScroll();
+        }
+    </script>
+</body>
+</html>
